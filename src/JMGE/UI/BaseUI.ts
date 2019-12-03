@@ -21,6 +21,9 @@ export class BaseUI extends JMBUI.BasicElement {
   public navOut = () => { };
 
   public dispose = () => {
+    this.finishDispose();
+  }
+  protected finishDispose = () => {
     JMInteractionEvents.WINDOW_RESIZE.removeListener(this.onResize);
     this.destroy();
   }
@@ -63,15 +66,15 @@ export class BaseUI extends JMBUI.BasicElement {
   private finishNav = (nextUI: BaseUI, fadeTiming: IFadeTiming, andDispose?: boolean) => {
     fadeTiming = _.defaults(fadeTiming || {}, dFadeTiming);
 
-    let screen = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).onFadeComplete(() => {
+    let screen = new ScreenCover(this.previousResize.outerBounds, fadeTiming.color).onFadeComplete(() => {
       this.navOut();
       this.parent.addChild(nextUI);
       this.parent.removeChild(this);
       nextUI.navIn();
       if (this.previousResize) {
-        nextUI.positionElements(this.previousResize);
+        nextUI.onResize(this.previousResize);
       }
-      let screen2 = new ScreenCover(new PIXI.Rectangle(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT), fadeTiming.color).fadeOut(fadeTiming.fadeOut);
+      let screen2 = new ScreenCover(this.previousResize.outerBounds, fadeTiming.color).fadeOut(fadeTiming.fadeOut);
       nextUI.addChild(screen2);
 
       if (andDispose) {

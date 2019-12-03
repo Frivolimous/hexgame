@@ -1,5 +1,6 @@
 import * as PIXI from 'pixi.js';
 import * as _ from 'lodash';
+import { ITileData } from '../../data/LevelData';
 
 window.addEventListener('keydown', e => {
   switch (e.key) {
@@ -11,7 +12,18 @@ window.addEventListener('keydown', e => {
   }
 })
 
-export const HexConfig = {
+export interface IHexConfig {
+  DECAY: number;
+  TRANS: number;
+  EQ: number;
+  PATH: number;
+  GI: number;
+  RI: number;
+  BI: number;
+  GREY: number;
+}
+
+export const HexConfig: IHexConfig = {
   DECAY: 0.95,
   TRANS: 0.28,
   EQ: 100,
@@ -31,9 +43,9 @@ export class HexTile extends PIXI.Sprite {
   r = 0;
   g = 0;
   b = 0;
-  db = true;
-  dg = true;
-  dr = true;
+  fb = false;
+  fg = false;
+  fr = false;
 
   oh = 0;
   h = 0;
@@ -42,6 +54,16 @@ export class HexTile extends PIXI.Sprite {
   //   super(texture);
   // }
 
+  import(tile: ITileData) {
+    this.r = tile.r;
+    this.g = tile.g;
+    this.b = tile.b;
+    this.h = tile.h;
+    this.fb = tile.fb || false;
+    this.fg = tile.fg || false;
+    this.fr = tile.fr || false;
+  }
+
   reset() {
     this.nr = 0;
     this.og = 0;
@@ -49,26 +71,30 @@ export class HexTile extends PIXI.Sprite {
     this.r = 0;
     this.g = 0;
     this.b = 0;
-    this.db = true;
-    this.dg = true;
-    this.dr = true;
+    this.fb = false;
+    this.fg = false;
+    this.fr = false;
 
     this.oh = 0;
     this.h = 0;
 
   }
 
-  adjustValues = () => {
+  adjustValues = (equal: boolean) => {
     this.adjustBlueValue();
-    this.adjustGreenValue();
-    this.adjustRedValue();
+    if (equal) {
+      this.adjustRefgreenEqual();
+    } else {
+      this.adjustGreenValue();
+      this.adjustRedValue();
+    }
     this.updateTint();
   }
 
   adjustBlueValue = () => {
     this.ob = this.b;
 
-    if (this.db) {
+    if (!this.fb) {
       this.connections.forEach(tile => {
         if (tile.ob > this.ob && tile.ob > HexConfig.EQ) this.b += Math.min(tile.ob - HexConfig.EQ, tile.ob - this.ob) * HexConfig.TRANS;
         if (tile.ob < this.ob && tile.ob < HexConfig.EQ) this.b += Math.max(tile.ob - HexConfig.EQ, tile.ob - this.ob) * HexConfig.TRANS;
@@ -77,11 +103,28 @@ export class HexTile extends PIXI.Sprite {
     }
   }
 
+  adjustRefgreenEqual = () => {
+    this.nr = this.r;
+    this.og = this.g;
+
+    this.connections.forEach(tile => {
+      if (tile.nr > this.nr && tile.nr > HexConfig.EQ) this.r += Math.min(tile.nr - HexConfig.EQ, tile.nr - this.nr) * HexConfig.TRANS;
+      if (tile.nr < this.nr && tile.nr < HexConfig.EQ) this.r += Math.max(tile.nr - HexConfig.EQ, tile.nr - this.nr) * HexConfig.TRANS;
+    });
+    this.r = HexConfig.EQ + (this.r - HexConfig.EQ) * HexConfig.DECAY;
+
+    this.connections.forEach(tile => {
+      if (tile.og > this.og && tile.og > HexConfig.EQ) this.g += Math.min(tile.og - HexConfig.EQ, tile.og - this.og) * HexConfig.TRANS;
+      if (tile.og < this.og && tile.og < HexConfig.EQ) this.g += Math.max(tile.og - HexConfig.EQ, tile.og - this.og) * HexConfig.TRANS;
+    });
+    this.g = HexConfig.EQ + (this.g - HexConfig.EQ) * HexConfig.DECAY;
+  }
+
   adjustGreenValue = () => {
     this.og = this.g;
     this.oh = this.h;
 
-    if (this.dg) {
+    if (!this.fg) {
       let hs = _.map(this.connections, tile => tile.oh);
       let minH = _.min(hs);
       let b = _.clamp(this.ob, 0, 0xFF);
@@ -102,13 +145,13 @@ export class HexTile extends PIXI.Sprite {
 
       let lowest = this.connections[lowestI];
       if (lowest.oh >= this.oh) {
-        if (this.dr) {
+        if (!this.fr) {
           this.r = 0;
         }
         return;
       }
 
-      if (this.dr) {
+      if (!this.fr) {
         lowest.nr += this.r;
         this.r = 0;
       } else {
@@ -117,7 +160,7 @@ export class HexTile extends PIXI.Sprite {
       }
     }
 
-    if (this.dr) {
+    if (!this.fr) {
       this.r = this.nr;
       this.nr = 0;
     }

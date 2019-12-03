@@ -6,35 +6,43 @@ import { SoundData } from '../utils/SoundData';
 import { CreditsUI } from './CreditsUI';
 import { HighScoreUI } from './HighScoreUI';
 import { GameUI } from './GameUI';
+import { GradientUI } from './GradientUI';
 
 export class MenuUI extends BaseUI {
   // public muter: MuterOverlay;
 
-  private startB: JMBUI.Button;
-  private highScoreB: JMBUI.Button; 
-  private creditsB: JMBUI.Button;
+  // private startB: JMBUI.Button;
+  // private highScoreB: JMBUI.Button; 
+  // private creditsB: JMBUI.Button;
 
   constructor() {
     super({ width: CONFIG.INIT.SCREEN_WIDTH, height: CONFIG.INIT.SCREEN_HEIGHT, bgColor: 0x666666, label: 'Millenium\nTyper', labelStyle: { fontSize: 30, fill: 0x3333ff } });
     this.label.x += 50;
-    this.startB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 200, label: 'Start', output: this.startGame });
-    this.highScoreB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 300, label: 'High Score', output: this.navHighScore });
-    this.creditsB = new JMBUI.Button({ width: 100, height: 30, x: 150, y: 380, label: 'Credits', output: this.navCredits });
-    this.addChild(this.startB, this.highScoreB, this.creditsB);
 
-    // this.muter = new MuterOverlay();
-    // this.muter.x = this.getWidth() - this.muter.getWidth();
-    // this.muter.y = this.getHeight() - this.muter.getHeight();
-    // this.addChild(this.muter);
+    let button = new JMBUI.Button({
+      width: 100, height: 50,
+      x: 150, y: 200, label: 'Bursts',
+      output: () => this.startGame(0),
+    });
+    this.addChild(button);
+    button = new JMBUI.Button({
+      width: 100, height: 50,
+      x: 150, y: 260, label: 'Level',
+      output: () => this.startGame(1),
+    });
+    this.addChild(button);
+    button = new JMBUI.Button({
+      width: 100, height: 50,
+      x: 150, y: 320, label: 'Gradient',
+      output: this.openGradient,
+    });
+    this.addChild(button);
   }
 
-  // public positionElements = (e: IResizeEvent) => {
-
-  // }
 
   public navIn = () => {
     // this.muter.reset();
-    SoundData.playMusic(0);
+    // SoundData.playMusic(0);
 
     // let extrinsic = SaveData.getExtrinsic();
     // let wpm = extrinsic.data.wpm;
@@ -50,8 +58,12 @@ export class MenuUI extends BaseUI {
 
   public nullFunc = () => { };
 
-  public startGame = () => {
-    this.navForward(new GameUI(0, 0));
+  public startGame = (index: number) => {
+    this.navForward(new GameUI(index, 0));
+  }
+
+  public openGradient = () => {
+    this.navForward(new GradientUI());
   }
 
   public navCredits = () => {

@@ -251,3 +251,15 @@ export function parseColor (color:string|number):number{
   }
   return color;
 }
+
+export function parseColorToString (color: string|number): string {
+  if (typeof color === 'string') {
+    return color;
+  } else {
+    let s = color.toString(16);
+    while (s.length < 6) {
+      s = '0' + s;
+    }
+    return '#' + s;
+  }
+}

@@ -1,0 +1,21 @@
+import * as PIXI from 'pixi.js';
+export class TooltipPopup extends PIXI.Container {
+    constructor(title, description) {
+        super();
+        // this.interactive = true;
+        this.titleField = new PIXI.Text(title, { fontSize: 13 });
+        this.descriptionField = new PIXI.Text(description, { fontSize: 13, wordWrap: true, wordWrapWidth: 300 });
+        this.titleField.position.set(5, 5);
+        this.descriptionField.position.set(5, this.titleField.height + 15);
+        this.background = new PIXI.Graphics();
+        this.background.beginFill(0xf1f1f1);
+        this.background.lineStyle(3);
+        this.background.drawRect(0, 0, 300, this.titleField.height + 10);
+        this.background.drawRect(0, this.titleField.height + 10, 300, this.descriptionField.height + 10);
+        this.addChild(this.background, this.titleField, this.descriptionField);
+    }
+    reposition(target, borders) {
+        this.x = target.x;
+        this.y = target.y + target.height;
+    }
+}

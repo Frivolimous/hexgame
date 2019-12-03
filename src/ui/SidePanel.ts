@@ -22,6 +22,14 @@ export class SidePanel extends PIXI.Container {
     window.addEventListener('keydown', this.keyDown);
   }
 
+  getWidth() {
+    return 200;
+  }
+
+  getHeight() {
+    return 600;
+  }
+
   addProperty = (key: string, i: number) => {
     let title = new PIXI.Text(key);
     title.position.set(5, 5 + 50 * i);

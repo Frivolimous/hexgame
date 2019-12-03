@@ -7,10 +7,11 @@ import { FlyingText } from '../JMGE/effects/FlyingText';
 import { MuterOverlay } from '../ui/MuterOverlay';
 import { PauseOverlay } from '../ui/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
-import { IResizeEvent } from '../JMGE/events/JMInteractionEvents';
+import { IResizeEvent, IKeyboardEvent, JMInteractionEvents } from '../JMGE/events/JMInteractionEvents';
 import { SidePanel } from '../ui/SidePanel';
 import { HexConfig } from '../game/map/HexTile';
 import { FPSCounter } from '../ui/fpsCounter';
+import { LEVEL_TITLES } from '../data/LevelData';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
@@ -23,6 +24,8 @@ export class GameUI extends BaseUI {
   private score: PIXI.Text;
 
   private background: PIXI.Graphics;
+  private sidepanel: SidePanel;
+  private fpsCounter: FPSCounter;
 
   private fadeTiming: IFadeTiming = {
     color: 0xffffff,
@@ -36,27 +39,48 @@ export class GameUI extends BaseUI {
     super();
     this.background = new PIXI.Graphics().beginFill(0x777777).drawRect(0, 0, CONFIG.INIT.SCREEN_WIDTH, CONFIG.INIT.SCREEN_HEIGHT);
     this.manager = new GameManager(level, difficulty);
-    let sidepanel = new SidePanel(HexConfig);
-    sidepanel.x = CONFIG.INIT.SCREEN_WIDTH + 50;
+    this.manager.display.y = 50;
+    this.sidepanel = new SidePanel(HexConfig);
+    this.sidepanel.x = CONFIG.INIT.SCREEN_WIDTH + 50;
     
-    this.addChild(this.background, this.manager.display);
-    this.addChild(sidepanel);
-    let counter = new FPSCounter();
-    counter.x = -100;
-    this.addChild(counter);
+    let title: PIXI.Text = new PIXI.Text(LEVEL_TITLES[level]);
+    title.x = (CONFIG.INIT.SCREEN_WIDTH - title.width) / 2;
+    this.addChild(this.background, this.manager.display, title);
+    this.addChild(this.sidepanel);
+    this.fpsCounter = new FPSCounter();
+    this.fpsCounter.x = -100;
+    this.addChild(this.fpsCounter);
   }
 
   public positionElements = (e: IResizeEvent) => {
     this.background.clear().beginFill(0x777777)
       .drawRect(e.outerBounds.x, e.outerBounds.y, e.outerBounds.width, e.outerBounds.height);
+    this.fpsCounter.x = e.outerBounds.left;
+    this.sidepanel.x = e.outerBounds.right - this.sidepanel.getWidth();
+    this.manager.positionElements(e);
   };
+
+  public navIn = () => {
+    this.manager.running = true;
+    JMInteractionEvents.KEY_DOWN.addListener(this.keyDown);
+  }
 
   public navOut = () => {
     this.manager.running = false;
-    // GameEvents.clearAll();
+    JMInteractionEvents.KEY_DOWN.removeListener(this.keyDown);
   }
 
   public dispose = () => {
-    super.dispose();
+    this.finishDispose();
+    this.manager.dispose();
+  }
+
+  public keyDown = (e: IKeyboardEvent) => {
+    switch (e.key) {
+      case 'Escape': {
+        this.navBack();
+      } break;
+      case 'e': this.manager.logTileData(); break;
+    }
   }
 }
