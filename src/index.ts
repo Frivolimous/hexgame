@@ -10,8 +10,6 @@ import { JMRect } from './JMGE/others/JMRect';
 import { JMInteractionEvents } from './JMGE/events/JMInteractionEvents';
 // import { ATSManager } from './utils/ATSManager';
 // import { genAchievements, genTutorials, genScores } from './data/ATSData';
-import { AchievementPopup } from './ui/AchievementPopup';
-import { TutorialPopup } from './ui/TutorialPopup';
 import { TextureData } from './utils/TextureData';
 // import { ScoreTracker } from './utils/ScoreTracker';
 

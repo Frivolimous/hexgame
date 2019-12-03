@@ -4,8 +4,6 @@ import { GameManager } from '../game/GameManager';
 import { Gauge } from '../JMGE/JMBUI';
 import { CONFIG } from '../Config';
 import { FlyingText } from '../JMGE/effects/FlyingText';
-import { MuterOverlay } from '../ui/MuterOverlay';
-import { PauseOverlay } from '../ui/PauseOverlay';
 import { SoundData } from '../utils/SoundData';
 import { IResizeEvent, IKeyboardEvent, JMInteractionEvents } from '../JMGE/events/JMInteractionEvents';
 import { SidePanel } from '../ui/SidePanel';
@@ -15,13 +13,6 @@ import { LEVEL_TITLES } from '../data/LevelData';
 
 export class GameUI extends BaseUI {
   private manager: GameManager;
-  private healthBar: Gauge;
-
-  private pauseOverlay: PauseOverlay;
-  private muter: MuterOverlay;
-  private wordDisplay: PIXI.Text;
-  private progress: PIXI.Text;
-  private score: PIXI.Text;
 
   private background: PIXI.Graphics;
   private sidepanel: SidePanel;
@@ -77,9 +68,9 @@ export class GameUI extends BaseUI {
 
   public keyDown = (e: IKeyboardEvent) => {
     switch (e.key) {
-      case 'Escape': {
+      case 'Escape':
         this.navBack();
-      } break;
+        break;
       case 'e': this.manager.logTileData(); break;
     }
   }
