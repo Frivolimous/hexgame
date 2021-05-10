@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@types/pixi.js": "^4.8.9",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "pixi.js": "^5.1.5"
   }
 }
