@@ -1,9 +1,9 @@
 
 /**
- * @type Anything that uses this algorithm must have an 'outlets' property which which contains all the other nodes that it connects to.
+ * @type Anything that uses this algorithm must have an 'connections' property which which contains all the other nodes that it connects to.
  */
 type nodeLike={
-  outlets:nodeLike[]
+  connections:nodeLike[]
 }
 
 /**
@@ -13,7 +13,7 @@ export class AStarPath{
   /**
    * @prop the final path generated is stored here as well as returned
    */
-  path:any[];
+  path:nodeLike[];
   /**
    * @prop this is a list of all the nodes that were checked in order to generate the path
    */
@@ -56,9 +56,9 @@ export class AStarPath{
 
         return this.path;
       }else{
-        main:for (let i=0;i<current.outlets.length;i++){
+        main:for (let i=0;i<current.connections.length;i++){
           for (let j=0;j<open.length;j++){
-            if (current.outlets[i]===open[j].current){
+            if (current.connections[i]===open[j].current){
               if (node.pValue+cValue<open[j].pValue){
                 open[j].pValue=node.pValue+cValue;
                 open[j].previous=node;
@@ -67,15 +67,16 @@ export class AStarPath{
             }
           }
           for (let j=0;j<this.closed.length;j++){
-            if (current.outlets[i]===this.closed[j].current){
+            if (current.connections[i]===this.closed[j].current){
               if (node.pValue+cValue<this.closed[j].pValue){
+                
                 this.closed[j].pValue=node.pValue+cValue;
                 this.closed[j].previous=node;
               }
               continue main;
             }
           }
-          let node2:IPathingNode={current:current.outlets[i],previous:node,pValue:node.pValue+1,hValue:this.hermeneutic(current.outlets[i],end)};
+          let node2:IPathingNode={current:current.connections[i],previous:node,pValue:node.pValue+this.tileValue(current.connections[i]),hValue:this.hermeneutic(current.connections[i],end)};
           // for (let j=0;j<open.length;j++){
           //   if (node2.hValue+node2.pValue < open[j].hValue+open[j].pValue){
           //     open.splice(j,0,node2);

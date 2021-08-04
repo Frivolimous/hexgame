@@ -80,6 +80,12 @@ export class HexTile extends PIXI.Sprite {
 
   }
 
+  setValues(r: number, g: number, b: number) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+  }
+
   adjustValues = (equal: boolean) => {
     this.adjustBlueValue();
     if (equal) {

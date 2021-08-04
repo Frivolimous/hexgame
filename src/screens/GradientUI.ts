@@ -37,7 +37,7 @@ export class GradientUI extends BaseUI {
 
     this.makeGradient(0x109A85, 0x00ff00);
 
-    window['makeGradient'] = this.makeGradient;
+    (window as any)['makeGradient'] = this.makeGradient;
   }
 
   public makeGradient = (color0: number|string, color1: number|string) => {

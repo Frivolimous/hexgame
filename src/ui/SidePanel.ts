@@ -36,6 +36,10 @@ export class SidePanel extends PIXI.Container {
     let input = new PIXI.Text(this.object[key]);
     input.position.set(100, 5 + 50 * i);
     input.interactive = true;
+    if (title.width > 90) {
+      title.width = 90;
+      title.scale.y = title.scale.x; 
+    }
 
     this.inputs.push([key, input]);
     this.addChild(title, input);
